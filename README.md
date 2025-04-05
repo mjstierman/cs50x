@@ -17,3 +17,37 @@ The intent is not to write the *best* code, but to scale the quality of code wit
 - Week 8 HTML, CSS, JavaScript
 - Week 9 Flask
 - Week 10 The End
+
+## Usage
+
+### Requirements
+- Be sure to have C compiler and dependencies installed:
+    - On Debian `apt install build-essential`
+    - On Fedora `dnf group install "C Development Tools and Libraries" "Development Tools"`
+    - On Arch `pacman -S base-devel`
+- All the code here should compile on any Linux-based system
+    - The code contains GNU C specific features and may not compile on mac/pc
+    - The code does **not** use the cs50 helpers ([cs50.h](https://github.com/cs50/libcs50))
+
+### Example
+1. Clone this repo:
+`git clone https://github.com/mjstierman/cs50x.git`
+1. Change in to the directory:
+`cd cs50x`
+1. Then change into the week's directory: `cd week_1`
+1. Then change into the assignment directory: `cd mario-more`
+1. Compile `make mario`
+1. Run the program `./mario`
+    ```bash
+    $ ./mario
+    How high should Mario jump (1-10)? 9
+            #   #        
+           ##   ##       
+          ###   ###      
+         ####   ####     
+        #####   #####    
+       ######   ######   
+      #######   #######  
+     ########   ######## 
+    #########   #########
+    ```
