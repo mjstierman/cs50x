@@ -143,6 +143,7 @@ bool vote(int voter, int rank, char* name)
             // then you should update the global preferences array to indicate that the voter voter has that candidate as their rank preference
             preferences[voter][rank] = i;
             // If the preference is successfully recorded, the function should return true
+            // printf("Updated voter %i rank %d with preference %i. \n",voter,rank,i); // ** uncomment for debug **
             return true;
         }
     }
@@ -156,10 +157,13 @@ void tabulate(void)
     // The function should update the number of votes each candidate has at this stage in the runoff.
     // Recall that at each stage in the runoff, every voter effectively votes for their top-preferred candidate who has not already been eliminated.
     for (int i = 0; i < voter_count; i++) {
-        for (int j = 0; j < candidate_count; j++)
-            if (candidates[i].eliminated == false) {
+        for (int j = 0; j < candidate_count; j++) {
+            if (!candidates[j].eliminated) {
                 candidates[preferences[i][j]].votes++;
+                // printf("Candidate %s now has %i votes. \n", candidates[i].name, candidates[i].votes); // ** uncomment for debug **
+                break;
             }
+        }
     }
     return;
 }
@@ -167,24 +171,21 @@ void tabulate(void)
 // Print the winner of the election, if there is one
 bool print_winner(void)
 {
-    // Find the maximum number of votes
-    char* winners[candidate_count];
-    int most_votes = 0;
-    int winner_index = 0;
+    // Recall that voter_count stores the number of voters in the election. Given that, how would you express the number of votes needed to win the election?
+    // Threshold = half of the vote
+    int threshold = voter_count / 2;
 
+    // If any candidate has more than threshold, their name should be printed and the function should return true.
     for (int i = 0; i < candidate_count; i++) {
-        if (candidates[i].votes > most_votes && candidates[i].eliminated == false) {
-            most_votes = candidates[i].votes;
-            winners[winner_index] = candidates[i].name;
-            winner_index += 1;
+        // printf("%s had %i votes. \n", candidates[i].name, candidates[i].votes); // ** uncomment for debug **
+        if (candidates[i].votes > threshold) {
+            printf("Your winner is: %s \n", candidates[i].name);
+            return true;
         }
     }
 
-    // Print the candidate (or candidates) with maximum votes
-    for (int i = 0; i < winner_index; i++) {
-        printf("Your winner is: %s\n", winners[i]);
-    }
-    return true;
+    // If nobody has won the election yet, the function should return false.
+    return false;
 }
 
 // Return the minimum number of votes any remaining candidate has
@@ -193,20 +194,26 @@ int find_min(void)
     int min = MAX_VOTERS;
     for (int i = 0; i < candidate_count; i++) {
         if (!candidates[i].eliminated && candidates[i].votes < min) {
+            // printf("Candidate %s has %i votes. \n", candidates[i].name, candidates[i].votes); // ** uncomment for debug **
             min = candidates[i].votes;
-        }
+        } 
     }
     return min;
+    printf("Min = %i\n", min); // ** uncomment for debug **
 }
 
 // Return true if the election is tied between all candidates, false otherwise
 bool is_tie(int min)
 {
-    for (int i = 0; i < candidate_count-1; i++) {
-        if (!candidates[i].eliminated && candidates[i].votes) {
-            return true;
+    for (int i = 0; i < candidate_count; i++) {
+        if (!candidates[i].eliminated && candidates[i].votes != min) {
+            // printf("Not a tie. Most votes: %i\n", candidates[i].votes); // ** uncomment for debug **
+            return false;
         }
-        else { return false; }
+        else { 
+            // printf("Still a tie... \n"); // ** uncomment for debug **
+            return true; 
+        }
     }
 }
 
@@ -214,8 +221,9 @@ bool is_tie(int min)
 void eliminate(int min)
 {
     for (int i = 0; i < candidate_count; i++) {
-        if (candidates[i].votes <= min) {
+        if (candidates[i].votes == min) {
             candidates[i].eliminated = true;
+            // printf("Candidate %s has been eliminated: %i votes. \n", candidates[i].name, candidates[i].votes); // ** uncomment for debug **
         }
     }
     return;
