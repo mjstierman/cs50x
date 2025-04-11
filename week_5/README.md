@@ -11,10 +11,10 @@ The was pretty simple practice. Some recursive actions to drive the concept home
 This one took a couple of days to get to a running state.
 
 ### Install and use debuggers
-[GDB](https://developers.redhat.com/articles/the-gdb-developers-gnu-debugger-tutorial-part-1-getting-started-with-the-debugger) and [coredumpctl](https://www.man7.org/linux/man-pages/man1/coredumpctl.1.html) were great for debugging the program and really accellerated the process. Make sure that the development libraries are installed on your system:
+[GDB](https://developers.redhat.com/articles/the-gdb-developers-gnu-debugger-tutorial-part-1-getting-started-with-the-debugger) and [coredumpctl](https://www.man7.org/linux/man-pages/man1/coredumpctl.1.html) were great for debugging the program and really accellerated the process. These are typically available from the distribution's core reposotories:
 ```bash
 # Fedora / Red Hat / .rpm
-$ sudo dnf group install development-tools
+$ sudo dnf group install development-tools c-development
 
 # Debian / Ubuntu / .deb
 $ sudo apt install build-essential
@@ -45,10 +45,11 @@ So in this case, some character in the `word` "`Congress`" failed to get copied 
 
 ### Lather, rinse, repeat.
 
-Keep going until there are no more issues. You can use these discoveries to help create unit tests later on.
+Keep going until there are no more issues. We can use these discoveries to help create unit tests later on.
 
 ## Results:
-Well, its not the fastest (with a 26-length hash table), but it ran:
+
+Well, its not the fastes, but it ran:
 ```bash
 WORDS MISSPELLED:     17062
 WORDS IN DICTIONARY:  143091
@@ -72,4 +73,4 @@ TIME IN unload:       0.02
 TIME IN TOTAL:        0.59
 ```
 
-The program is functioning as intended, with all results returning correctly. While there is always room for improvement -- adjustments can be made through algorithm optimization and hash size -- I'm happy that the spell checker works effectively.
+The program is functioning as intended, with all results returning correctly. While there is always room for improvement -- adjustments can be made through algorithm optimization and hash size -- I'm happy that the spell checker works correctly.

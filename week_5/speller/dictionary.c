@@ -31,26 +31,28 @@ bool check(const char *word)
         return false;
     }
 
-    char *little_word[LENGTH + 1];
+    char little_word[LENGTH + 1];
 
     // validate the word -> to lowercase
     for (int i = 0; i < length; i++) {
         if (isalpha(word[i])) {
-            *little_word[i] = tolower(word[i]);
+            little_word[i] = tolower(word[i]);
         }
         else if (word[i] == '\'') { // ignore the apostrophe as it is valid
-            *little_word[i] = word[i];
+            little_word[i] = word[i];
         }
         else { 
             printf("Error. Could not read word.");
         }
     }
+    little_word[length] = '\0'; // null terminate the string 
+
     // calculate its hash
-    unsigned int hash_index = hash(*little_word); 
+    unsigned int hash_index = hash(little_word); 
 
     // iterate through linked list @hash until found
     for(node *tmp = table[hash_index]; tmp != NULL; tmp = tmp->next) {
-        if (strcmp(*little_word, tmp->word) == 0) {
+        if (strcmp(little_word, tmp->word) == 0) {
             return true;
         } 
     }
@@ -160,7 +162,7 @@ bool load(const char *dictionary)
         newnode->next=NULL; 
         
         node *tmp = table[hash_index]; // create temporary pointer
-        if (table[hash_index]) { // if pointer is empty
+        if (table[hash_index] == NULL) { // if pointer is empty
             table[hash_index] = newnode; // add the new node
         }
         else {
@@ -200,15 +202,15 @@ unsigned int size(void)
 // Unloads dictionary from memory, returning true if successful, else false
 bool unload(void)
 {
-    // TODO
-    // loop through the hash table
+    // Loop through the hash table
     for (int i = 0; i < N; i++) {
-        // *tmp starts with the head of i, and iterates until it finds NULL
-        for(node *tmp = table[i]; tmp != NULL; tmp = tmp->next) {
+        node *tmp = table[i]; // Start with the head of the linked list
+        while (tmp != NULL) {
             node *next = tmp->next; // Store the next node
-            free(tmp); // free the tmp 
+            free(tmp); // Free the current node
             tmp = next; // Move to the next node
         }
+        table[i] = NULL; // Optional: Clear the pointer after freeing
     }
     return true;
 }
