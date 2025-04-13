@@ -1,0 +1,1 @@
+SELECT DISTINCT title FROM movies JOIN stars ON movies.id = stars.movie_id WHERE stars.person_id IN (SELECT id FROM people WHERE name IN ('Bradley Cooper', 'Jennifer Lawrence')) GROUP BY movies.id HAVING COUNT(DISTINCT stars.person_id) = 2;;
