@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <!-- bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- local css/js -->
+        <link href="styles.css" rel="stylesheet">
+
+        <!-- html head components -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>CS50 Book Reader</title>
+
+        <!-- favicon from https://icon-icons.com/ CC0 -->
+        <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    </head>
+    <body>
+        <header>
+            Selections from <a href="https://www.gutenberg.org">Project Gutenberg</a> 
+            <ul class="nav nav-tabs justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link active" href="index.html">HOME</a>
+                  </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Books</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="frankenstein.html">Frankenstein</a></li>
+                        <li><a class="dropdown-item" href="pride.html">Pride and Predjudice</a></li>
+                        <li><a class="dropdown-item" href="moby.html">Moby Dick</a></li>              
+                    </ul>
+                </li>
+            </ul>
+        </header>
+        <main>
+            </br>
+            <!-- JavaScript Quiz -->
+            <h2>Which of these is your favorite novel?</h2>
+            <div class="app-wrapper mx-auto">
+                <div class="card-group justify-content-center">
+                    <div class="card w-25" >
+                        <img src="/static/frankenstein.jpg" class="card-img-top" alt="Cover of Frankenstein">
+                        <h3>Frankenstein</h3>
+                        <button type="button" class="btn btn-primary w-50 mx-auto" onclick="vote('frankenstein')">Vote</button>
+                    </div>
+                    <div class="card w-25" >
+                        <img src="/static/pride.jpg" class="card-img-top" alt="Cover of Pride and Predjudice">
+                        <h3>Pride and Predjudice</h3>
+                        <button type="button" class="btn btn-primary w-50 mx-auto" onclick="vote('pride')">Vote</button>
+                    </div>
+                    <div class="card w-25" >
+                        <img src="/static/moby.jpg" class="card-img-top" alt="Cover of Moby Dick">
+                        <h3>Moby Dick</h3>
+                        <button type="button" class="btn btn-primary w-50 mx-auto" onclick="vote('moby')">Vote</button>
+                    </div>
+                </div>
+        
+                <div class="results-section">
+                    <h2>Live Voting Results</h2>
+                    <canvas id="resultsChart"></canvas>
+                    <p>Total Votes: <span id="totalVotes">0</span></p>
+                    <div id="detailedResults" style="display:none;">
+                        <h3>Vote Breakdown:</h3>
+                        <p>Frankenstein: <span id="votesA">0</span> votes (<span id="percentA">0%</span>)</p>
+                        <p>Pride and Predjudice: <span id="votesB">0</span> votes (<span id="percentB">0%</span>)</p>
+                        <p>Moby Dick: <span id="votesC">0</span> votes (<span id="percentC">0%</span>)</p>
+                    </div>
+                    <button id="showResults" onclick="showDetailedResults()">Show Results</button>
+                    <button id="reset" onclick="resetVotes()">Reset</button>
+                </div>
+            </div>
+        
+            <script src="script.js"></script>
+        </main>
+    </body>
+</html>

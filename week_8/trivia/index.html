@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+        <script>
+
+            // TODO: Add code to check answers to questions
+            function checkMultiChoice(event) {
+                // Get the button that triggered the event
+                let button = event.target;
+
+                // logic
+                if (button.id == '1997') {
+                    button.style.backgroundColor = 'Green';
+                    button.parentElement.querySelector('.feedback').innerHTML = 'Correct!';
+                }
+                else {
+                    button.style.backgroundColor = 'Red';
+                    button.parentElement.querySelector('.feedback').innerHTML = 'Incorrect';
+                }
+            }
+
+            function checkFreeAnswer(event) {
+                // Get the element which triggered the event
+                let button = event.target;
+
+                // Get the input element corresponding to the button
+                let input = button.parentElement.querySelector('input');
+
+                // Check for correct answer
+                if (input.value === 'Brown' || 'brown') {
+                    input.style.backgroundColor = 'Green';
+                    input.parentElement.querySelector('.feedback').innerHTML = 'Correct!';
+                }
+                else {
+                    input.style.backgroundColor = 'Red';
+                    input.parentElement.querySelector('.feedback').innerHTML = 'Incorrect';
+                }
+            }
+
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <!-- TODO: Add multiple choice question here -->
+                <h3>When did the Porsche 911 stop using an air-cooled engine?</h3>
+                <button id="1975" onclick="checkMultiChoice(event)">1975</button>
+                <button id="1988" onclick="checkMultiChoice(event)">1988</button>
+                <button id="1997" onclick="checkMultiChoice(event)">1997</button>
+                <button id="Never" onclick="checkMultiChoice(event)">Never</button>
+                <p class="feedback"></p>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <!-- TODO: Add free response question here -->
+                <h3>What is the most common eye color in humans?</h3>
+                <input type="text"></input>
+                <button onclick="checkFreeAnswer(event)">Check Answer</button>
+                <p class="feedback"></p>
+            </div>
+        </div>
+    </body>
+</html>

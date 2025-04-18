@@ -1,0 +1,60 @@
+1. List the 10 HTML tags:
+- head
+- body
+- link
+- script
+- a
+- title
+- header
+- footer
+- main
+- p
+
+2. List the 5x5 CSS selectors x properties you’ve used:
+header {
+    background-color: #96ADFC;
+    text-align: center;
+    text-decoration-color: #00070f;
+    border: none;
+    font-family: Georgia, serif;
+}
+
+body {
+    background-color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-decoration-color: black;
+    text-align: center;
+    align-items: center;
+}
+
+.app-wrapper {
+    background-color: white;
+    width: 90%;
+    max-width: 1200px;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+}
+
+#card-text {
+    width: 100%; 
+    height: 100%;
+    background-color: #fff8f0;
+    font-family: Georgia, serif;
+    text-shadow: 0 0 1px rgba(51, 51, 51, 0.25);
+}
+
+div.container {
+    height: 90vh;
+    border: none;
+    background-color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    font-family: Georgia, serif;
+}
+
+
+3. A brief (one-sentence) description of how you chose to use JavaScript and Bootstrap:
+This project utilizes Bootstrap for presenting the novel text in card format, and JavaScript is used to poll the readers on their favorite novel.
+
+This tutorial was used for the polling: https://www.codewithfaraz.com/content/436/create-a-voting-app-with-html-css-and-javascript
