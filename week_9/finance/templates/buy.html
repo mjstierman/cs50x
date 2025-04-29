@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Buy
+{% endblock %}
+
+{% block main %}
+    <form action="/buy" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="symbol" placeholder="Stock to buy" type="text">
+            {% if invalid %}
+                <div> <b>{{ symbol }}</b> is not a valid ticker.</div>
+            {% endif %}
+        </div>
+        </br>
+        <div class="mb-3">
+            <input autocomplete="off" class="form-control mx-auto w-auto" name="quantity" placeholder="Number of shares" type="text">
+            {% if sharerror %}
+                <div>Invalid number of shares.</div>
+            {% endif %}
+        </div>
+        <button class="btn btn-primary" type="submit">Purchase</button>
+        </br>
+    </form>
+{% endblock %}

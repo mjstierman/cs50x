@@ -7,7 +7,7 @@
 {% block main %}
     <form action="/quote" method="post">
         <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="ticker" placeholder="Ticker Symbol" type="text">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="symbol" placeholder="Ticker Symbol" type="text">
         </div>
         <button class="btn btn-primary" type="submit">Get Quote</button>
     </form>
@@ -16,6 +16,8 @@
         <div> <b>{{symbol}}</b> is not a valid ticker </div>
     {% endif %}
     {% if name %}
-        <div><b>{{ symbol }}</b>: {{ price }}</div>
+        <div><b>{{ symbol }}</b></div>
+        <div>({{ name }}):</div>
+        <div>{{ price }}</div>
     {% endif %}
 {% endblock %}
