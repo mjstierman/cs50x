@@ -1,3 +1,4 @@
+""" Finance app backend """
 import os
 
 from cs50 import SQL
@@ -9,6 +10,7 @@ from helpers import apology, login_required, lookup, usd
 
 # Configure application
 app = Flask(__name__)
+port = 5000
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -21,6 +23,31 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
 
+# Configure the SQLite database schema
+try:
+    db.execute("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL, cash NUMERIC NOT NULL DEFAULT 10000.00)")
+except RuntimeError:
+    print("An error occurred creating user table.")
+try:
+    db.execute("CREATE TABLE sqlite_sequence(name, seq)")
+except RuntimeError:
+    print("An error occurred creating sqlite_sequence table.")
+try:
+    db.execute("CREATE TABLE records (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL, date DEFAULT CURRENT_TIMESTAMP NOT NULL, symbol TEXT(4) NOT NULL, price DECIMAL(30, 2) NOT NULL, quantity INT NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id))")
+except RuntimeError:
+    print("An error occurred creating records table.")
+try:
+    db.execute("CREATE UNIQUE INDEX username ON users (username)")
+except RuntimeError:
+    print("An error occurred creating username index.")
+try:
+    db.execute("CREATE UNIQUE INDEX records ON records (id)")
+except RuntimeError:
+    print("An error occurred creating records index.")
+try:
+    db.execute("CREATE INDEX date ON records (date)")
+except RuntimeError:
+    print("An error occurred creating date index.")
 
 @app.after_request
 def after_request(response):
@@ -42,7 +69,38 @@ def index():
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        # Lookup symbol
+        symbol = request.form.get("symbol")
+        quoted = lookup(symbol)
+        if not quoted:
+            return render_template("buy.html", invalid=True, symbol=symbol)
+        # Check number of shares
+        try:
+            quantity = int(request.form.get("quantity"))
+        except TypeError:
+            return render_template("buy.html", sharerror=True)
+        if quantity < 1:
+            return render_template("buy.html", sharerror=True)
+        # Calculate the purchase
+        net_price = quantity * quoted["price"]
+        old_balance = db.execute("SELECT cash FROM users WHERE id=?", session["user_id"])
+        old_balance = int(old_balance[0]["cash"])
+        if net_price > old_balance:
+            return apology("Not enough funds")
+        # Record the purchase
+        new_balance = old_balance - net_price
+        try:
+            db.execute("UPDATE users SET cash=? WHERE id=? ", new_balance, session["user_id"])
+        except RuntimeError:
+            return apology("A database error occurred")
+        # Update the user's history
+        try:
+            db.execute("INSERT INTO records (user_id, symbol, price, quantity) VALUES (:user_id, :symbol, :price, :quantity)", user_id=session["user_id"], symbol=symbol, price=quoted["price"], quantity=quantity)
+        except RuntimeError:
+            return apology("A database error occurred")
+        return redirect("/")
+    return render_template("buy.html")
 
 
 @app.route("/history")
@@ -107,10 +165,12 @@ def logout():
 def quote():
     """Get stock quote."""
     if request.method == "POST":
-        quoted = lookup(request.form.get("ticker"))
+        symbol = request.form.get("symbol")
+        quoted = lookup(symbol)
         if not quoted:
-            return render_template("quote.html", invalid=True, symbol = request.form.get("ticker"))
-        return render_template("quote.html", name = quoted["name"], price = usd(quoted["price"]), symbol = quoted["symbol"])
+            return render_template("quote.html", invalid=True, symbol=symbol)
+        return render_template("quote.html", name = quoted["name"],
+            price = usd(quoted["price"]), symbol = quoted["symbol"])
     else:
         return render_template("quote.html")
 
@@ -137,8 +197,7 @@ def register():
         # Ensure username does not exist
         if len(rows) != 0:
             return apology("Username already exists", 403)
-        
-        # INSERT the new user into users: hash the password with generate_password_hash
+        # INSERT the new user into users: hash the password
         username = request.form.get("username")
         hashword = generate_password_hash(request.form.get("password1"))
         db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, hashword)
@@ -153,3 +212,6 @@ def register():
 def sell():
     """Sell shares of stock"""
     return apology("TODO")
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=port)

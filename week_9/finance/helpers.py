@@ -1,8 +1,8 @@
-import requests
-
-from flask import redirect, render_template, session
+""" Helper functions for Finance app """
 from functools import wraps
 
+import requests
+from flask import redirect, render_template, session
 
 def apology(message, code=400):
     """Render message as an apology to user."""
@@ -49,7 +49,7 @@ def lookup(symbol):
     """Look up quote for symbol."""
     url = f"https://finance.cs50.io/quote?symbol={symbol.upper()}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=30)
         response.raise_for_status()  # Raise an error for HTTP error responses
         quote_data = response.json()
         return {
