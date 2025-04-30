@@ -33,7 +33,7 @@ try:
 except RuntimeError:
     print("An error occurred creating sqlite_sequence table.")
 try:
-    db.execute("CREATE TABLE records (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL, date DEFAULT CURRENT_TIMESTAMP NOT NULL, symbol TEXT(4) NOT NULL, price DECIMAL(30, 2) NOT NULL, quantity INT NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id))")
+    db.execute("CREATE TABLE records (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL, date DEFAULT CURRENT_TIMESTAMP NOT NULL, symbol TEXT(4) NOT NULL, price DECIMAL(30, 2) NOT NULL, quantity INT NOT NULL, total DECIMAL(30,2), FOREIGN KEY(user_id) REFERENCES users(id))")
 except RuntimeError:
     print("An error occurred creating records table.")
 try:
@@ -62,7 +62,31 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    name = db.execute("SELECT username FROM users WHERE id=?", session["user_id"])
+    # display the user’s current cash balance
+    cash = db.execute("SELECT cash FROM users WHERE id=?", session["user_id"])
+    # which stocks the user owns, 
+    stocks = db.execute("SELECT DISTINCT symbol FROM records WHERE user_id=?", session["user_id"])
+    print(stocks)
+    # A list of holdings e.g. [[symbol1, quantity1, price1], [symbol2, quantity2, price2], etc...]
+    user_holdings = []
+    stocks_net = 0
+    # the numbers of shares owned
+    for stock in stocks:
+        symbol = stock['symbol']
+        symbol_qty = db.execute("SELECT SUM(quantity) FROM records WHERE symbol=? AND user_id=?", symbol, session["user_id"])
+        symbol_qty = symbol_qty[0]['SUM(quantity)']
+        # the current price of each stock
+        symbol_data = lookup(symbol)
+        symbol_val = symbol_data['price']
+        # and the total value of each holding (i.e., shares times price)
+        symbol_net = symbol_val * int(symbol_qty)
+        stocks = [symbol, symbol_qty, symbol_val, symbol_net]
+        user_holdings.append(stocks)
+        # display the user's net worth
+        stocks_net += symbol_net
+    net_worth = usd(stocks_net + cash[0]['cash'])
+    return render_template("index.html", name=name[0]["username"], cash=usd(cash[0]["cash"]), user_holdings=user_holdings, stocks=usd(stocks_net), net_worth=net_worth)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -96,7 +120,7 @@ def buy():
             return apology("A database error occurred")
         # Update the user's history
         try:
-            db.execute("INSERT INTO records (user_id, symbol, price, quantity) VALUES (:user_id, :symbol, :price, :quantity)", user_id=session["user_id"], symbol=symbol, price=quoted["price"], quantity=quantity)
+            db.execute("INSERT INTO records (user_id, symbol, price, quantity, total) VALUES (:user_id, :symbol, :price, :quantity, :total)", user_id=session["user_id"], symbol=symbol, price=quoted["price"], quantity=quantity, total=net_price)
         except RuntimeError:
             return apology("A database error occurred")
         return redirect("/")

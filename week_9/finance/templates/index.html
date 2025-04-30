@@ -5,5 +5,32 @@
 {% endblock %}
 
 {% block main %}
-
+<h1>Account Dashboard</h1>
+<h2><b>{{ name }}</b></h2>
+<p>Cash: {{ cash }}</p>
+<p>Stocks: {{ stocks }} </p>
+<p><b>Net worth: {{ net_worth }}</b></p>
+<div align="center">
+    <h2>Holdings</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in user_holdings %}
+                <tr>
+                    <td>{{ stock[0] }}</td>
+                    <td>{{ stock[1] }}</td>
+                    <td>$ {{ stock[2] }}</td>
+                    <td>$ {{ stock[3] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
