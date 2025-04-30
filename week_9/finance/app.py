@@ -20,34 +20,21 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Implement at least one personal touch
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
-
-# Configure the SQLite database schema
 try:
+    # Configure the SQLite database schema on system start
+    open("finance.db", "x")
+    db = SQL("sqlite:///finance.db")
     db.execute("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL, cash NUMERIC NOT NULL DEFAULT 10000.00)")
-except RuntimeError:
-    print("An error occurred creating user table.")
-try:
-    db.execute("CREATE TABLE sqlite_sequence(name, seq)")
-except RuntimeError:
-    print("An error occurred creating sqlite_sequence table.")
-try:
     db.execute("CREATE TABLE records (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL, date DEFAULT CURRENT_TIMESTAMP NOT NULL, symbol TEXT(4) NOT NULL, price DECIMAL(30, 2) NOT NULL, quantity INT NOT NULL, total DECIMAL(30,2), FOREIGN KEY(user_id) REFERENCES users(id))")
-except RuntimeError:
-    print("An error occurred creating records table.")
-try:
     db.execute("CREATE UNIQUE INDEX username ON users (username)")
-except RuntimeError:
-    print("An error occurred creating username index.")
-try:
-    db.execute("CREATE UNIQUE INDEX records ON records (id)")
-except RuntimeError:
-    print("An error occurred creating records index.")
-try:
+    db.execute("CREATE UNIQUE INDEX history ON records (id)")
     db.execute("CREATE INDEX date ON records (date)")
-except RuntimeError:
-    print("An error occurred creating date index.")
+except FileExistsError:
+    # Or open existing database
+    db = SQL("sqlite:///finance.db")
+
 
 @app.after_request
 def after_request(response):
@@ -67,7 +54,6 @@ def index():
     cash = db.execute("SELECT cash FROM users WHERE id=?", session["user_id"])
     # which stocks the user owns, 
     stocks = db.execute("SELECT DISTINCT symbol FROM records WHERE user_id=?", session["user_id"])
-    print(stocks)
     # A list of holdings e.g. [[symbol1, quantity1, price1], [symbol2, quantity2, price2], etc...]
     user_holdings = []
     stocks_net = 0
