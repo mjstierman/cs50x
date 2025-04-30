@@ -235,7 +235,40 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        # Lookup symbol
+        symbol = request.form.get("symbol")
+        quoted = lookup(symbol)
+        if not quoted:
+            return render_template("sell.html", invalid=True, symbol=symbol)
+        # check shares owned
+        owned = db.execute("SELECT SUM(quantity) FROM records WHERE symbol=? AND user_id=?", symbol, session["user_id"])
+        owned = owned[0]['SUM(quantity)']
+        if owned < 1: 
+            return render_template("sell.html", invalid=True, symbol=symbol)
+        try:
+            quantity = int(request.form.get("quantity"))
+        except TypeError:
+            return render_template("sell.html", sharerror=True)
+        if quantity < 1:
+            return render_template("sell.html", sharerror=True)
+        # Calculate the sale
+        net_price = quantity * quoted["price"]
+        old_balance = db.execute("SELECT cash FROM users WHERE id=?", session["user_id"])
+        old_balance = int(old_balance[0]["cash"])
+        # Record the purchase
+        new_balance = old_balance + net_price
+        try:
+            db.execute("UPDATE users SET cash=? WHERE id=? ", new_balance, session["user_id"])
+        except RuntimeError:
+            return apology("A database error occurred")
+        # Update the user's history
+        try:
+            db.execute("INSERT INTO records (user_id, symbol, price, quantity, total) VALUES (:user_id, :symbol, :price, :quantity, :total)", user_id=session["user_id"], symbol=symbol, price=quoted["price"], quantity=-quantity, total=net_price)
+        except RuntimeError:
+            return apology("A database error occurred")
+        return redirect("/")
+    return render_template("sell.html")
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
